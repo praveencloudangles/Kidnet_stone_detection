@@ -286,11 +286,11 @@ def transform_data():
 
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 480
-    classes = ['kidney stone']
+    classes = ['Kidney Stone']
     # Create datasets
-    train_dataset = CustomDataset(os.path.join(os.getcwd(),"Kidney_stone_detection/train/images/"),os.path.join(os.getcwd(),"Kidney_stone_detection/train/annotations/"), os.path.join(os.getcwd(),"Kidney_stone_detection/train/labels/"), "Kidney_stone_detection", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
+    train_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_images/"),os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_annotations/"), os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_labels/"), "kidney stone reworked/kidney_stone_detection/", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
     print("one-------------",train_dataset)
-    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"Kidney_stone_detection/valid/images/"),os.path.join(os.getcwd(),"Kidney_stone_detection/valid/annotations/"), os.path.join(os.getcwd(),"Kidney_stone_detection/valid/labels/"), "Kidney_stone_detection", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
+    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_images/"),os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_annotations/"), os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_labels/"), "kidney stone reworked/kidney_stone_detection/", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
     print("-------------",valid_dataset)
     i, a = train_dataset[0]
     print("iiiiii:",i)
