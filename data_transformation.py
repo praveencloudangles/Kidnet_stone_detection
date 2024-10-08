@@ -299,7 +299,7 @@ def transform_data():
     # Create datasets
     train_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_images"),os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_annotations/"), os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_labels/"), "kidney_stone_reworked/kidney_stone_detection/",IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
     print("one-------------",train_dataset)
-    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_images"),os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_annotations/"), os.path.join(os.getcwd(),"/validkidney_stone_reworked/kidney_stone_detection/valid_labels/"), "kidney_stone_reworked/kidney_stone_detection/",IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
+    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_images"),os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_annotations/"), os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_labels/"), "kidney_stone_reworked/kidney_stone_detection/",IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
     print("-------------",valid_dataset)
     i, a = train_dataset[0]
     print("iiiiii:",i)
