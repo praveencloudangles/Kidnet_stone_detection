@@ -24,7 +24,7 @@ def visualise_image():
     url_response = requests.get(url)
     with zipfile.ZipFile(BytesIO(url_response.content)) as z:
         z.extractall('.')
-    images = open_random_images(os.path.join(os.getcwd(),"reworked_kidney_stone/kidney_stone_reworked/kidney_stone_detection/train_images"))
+    images = open_random_images(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_images"))
     for i in range(4):
         image = Image.open(images[i])
         image = image.convert('RGB')
