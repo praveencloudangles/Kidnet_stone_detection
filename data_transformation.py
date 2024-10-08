@@ -1,3 +1,4 @@
+import torch
 from torch.utils.data import Dataset
 import os
 from xml.etree import ElementTree as ET
@@ -12,6 +13,7 @@ from torchvision import transforms as transforms
 import dill as pickle
 
 def transform_data():
+    # os.system("python3.10 annot2xml.py")
     # Define the training tranforms
     def get_train_aug():
         return A.Compose([
@@ -92,9 +94,12 @@ def transform_data():
             self.all_annot_paths = glob.glob(os.path.join(self.labels_path, '*.xml'))
             self.all_images = [image_path.split(os.path.sep)[-1] for image_path in self.all_image_paths]
             self.all_images = sorted(self.all_images)
+            print("Number of images:-----------------", len(self.all_images))
             # Remove all annotations and images when no object is present.
 
         def load_image_and_labels(self, index):
+            if index >= len(self.all_images):
+                raise IndexError("Index out of range")
             image_name = self.all_images[index]
             image_path = os.path.join(self.images_path, image_name)
 
@@ -122,36 +127,39 @@ def transform_data():
             # Box coordinates for xml files are extracted and corrected for image size given.
             for member in root.findall('object'):
                 labels.append(self.classes.index(member.find('name').text))
-                
+                #class_name = member.find('name').text
                 x_center = float(member.find('x-center').text)
                 y_center = float(member.find('y-center').text)
                 width = float(member.find('width').text)
                 height = float(member.find('height').text)
-                
                 xmin = float((x_center - width / 2) * image_width)
                 ymin = float((y_center - height / 2) * image_height)
                 xmax = float((x_center + width / 2) * image_width)
                 ymax = float((y_center + height / 2) * image_height)
+                
+                
+                print("bpxes--------------------", boxes)
+                print("xmin----------------------", xmin, ymin, xmax, ymax)
 
                 ymax, xmax = self.check_image_and_annotation(
                     xmax, ymax, image_width, image_height
                 )
-
                 orig_boxes.append([xmin, ymin, xmax, ymax])
-                
-                # Resize the bounding boxes according to the
-                # desired `width`, `height`.
+
                 xmin_final = (xmin/image_width)*self.width
                 xmax_final = (xmax/image_width)*self.width
                 ymin_final = (ymin/image_height)*self.height
                 ymax_final = (ymax/image_height)*self.height
                 
                 boxes.append([xmin_final, ymin_final, xmax_final, ymax_final])
-            
+                
             # Bounding box to tensor.
             boxes = torch.as_tensor(boxes, dtype=torch.float32)
             # Area of the bounding boxes.
-            area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+            if len(boxes.size()) == 1:
+                area = None  # Or whatever value you want to assign
+            else:
+                area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
             # No crowd instances.
             iscrowd = torch.zeros((boxes.shape[0],), dtype=torch.int64)
             # Labels to tensor.
@@ -238,6 +246,7 @@ def transform_data():
                 torch.tensor(np.array(final_classes)), area, iscrowd, dims
 
         def __getitem__(self, idx):
+            print("Index-----------------------", idx)
             # Capture the image name and the full image path.
             if not self.mosaic:
                 image, image_resized, orig_boxes, boxes, \
@@ -284,13 +293,13 @@ def transform_data():
         def __len__(self):
             return len(self.all_images)
 
-    IMAGE_WIDTH = 640
-    IMAGE_HEIGHT = 480
+    IMAGE_WIDTH = 800
+    IMAGE_HEIGHT = 680
     classes = ['Kidney Stone']
     # Create datasets
-    train_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_images/"),os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_annotations/"), os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/train_labels/"), "kidney stone reworked/kidney_stone_detection/", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
+    train_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_images"),os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_annotations/"), os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/train_labels/"), "kidney_stone_reworked/kidney_stone_detection/",IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_train_transform())
     print("one-------------",train_dataset)
-    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_images/"),os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_annotations/"), os.path.join(os.getcwd(),"kidney stone reworked/kidney_stone_detection/valid_labels/"), "kidney stone reworked/kidney_stone_detection/", IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
+    valid_dataset = CustomDataset(os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_images"),os.path.join(os.getcwd(),"kidney_stone_reworked/kidney_stone_detection/valid_annotations/"), os.path.join(os.getcwd(),"/validkidney_stone_reworked/kidney_stone_detection/valid_labels/"), "kidney_stone_reworked/kidney_stone_detection/",IMAGE_WIDTH, IMAGE_HEIGHT, classes, get_valid_transform())
     print("-------------",valid_dataset)
     i, a = train_dataset[0]
     print("iiiiii:",i)
@@ -299,8 +308,7 @@ def transform_data():
         pickle.dump(train_dataset, f)
     with open('valid_dataset.pkl', 'wb') as f:
         pickle.dump(valid_dataset, f)
-  
-    
+
     return train_dataset
 
 transform_data()
